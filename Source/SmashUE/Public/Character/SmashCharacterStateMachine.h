@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SmashCharacterStateID.h"
 #include "UObject/Object.h"
 #include "SmashCharacterStateMachine.generated.h"
 
@@ -21,6 +22,11 @@ public:
 
 	ASmashCharacter* GetCharacter() const;
 
+	UFUNCTION(BlueprintCallable)
+	void ChangeState(ESmashCharacterStateID NextStateID);
+
+	USmashCharacterState* GetState(ESmashCharacterStateID StateID);
+
 protected:
 	UPROPERTY()
 	TObjectPtr<ASmashCharacter> Character;
@@ -28,6 +34,12 @@ protected:
 	UPROPERTY()
 	TArray<USmashCharacterState*> AllStates;
 
+	UPROPERTY()
+	ESmashCharacterStateID CurrentStateID;
+
+	UPROPERTY()
+	TObjectPtr<USmashCharacterState> CurrentState;
+	
 	void FindStates();
 
 	void InitStates();
