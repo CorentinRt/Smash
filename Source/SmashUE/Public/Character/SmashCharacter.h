@@ -10,7 +10,8 @@ UCLASS()
 class SMASHUE_API ASmashCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
+	
+#pragma region Unreal Defaults
 public:
 	// Sets default values for this character's properties
 	ASmashCharacter();
@@ -25,4 +26,19 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+#pragma endregion
+
+#pragma region Orient
+public:
+	float GetOrientX() const;
+	
+	void SetOrientX(float NewOrientX);
+
+protected:
+	UPROPERTY(BlueprintReadOnly)
+	float OrientX = 1.f;
+
+	void RotateMeshUsingOrientX() const;
+#pragma endregion
+	
 };
