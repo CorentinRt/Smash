@@ -13,24 +13,7 @@ void AMatchGameMode::BeginPlay()
 
 	TArray<AArenaPlayerStart*> PlayerStartsPoints;
 	FindPlayerStartActorsInArea(PlayerStartsPoints);
-
-	for (AArenaPlayerStart* PlayerStartPoint : PlayerStartsPoints)
-	{
-		EAutoReceiveInput::Type InputType = PlayerStartPoint->AutoReceiveInput.GetValue();
-
-		TSubclassOf<ASmashCharacter> SmashCharacterClass = GetSmashCharacterClassFromInputType(InputType);
-
-		if (SmashCharacterClass == nullptr) continue;
-		
-		GEngine->AddOnScreenDebugMessage(
-			-1,
-			3.f,
-			FColor::Cyan,
-			PlayerStartPoint->GetFName().ToString()
-			);
-
-		SpawnCharacters(PlayerStartsPoints);
-	}
+	SpawnCharacters(PlayerStartsPoints);
 }
 
 void AMatchGameMode::FindPlayerStartActorsInArea(TArray<AArenaPlayerStart*>& ResultsActors)
