@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "SmashCharacter.generated.h"
 
+class USmashCharacterStateMachine;
+
 UCLASS()
 class SMASHUE_API ASmashCharacter : public ACharacter
 {
@@ -39,6 +41,18 @@ protected:
 	float OrientX = 1.f;
 
 	void RotateMeshUsingOrientX() const;
+#pragma endregion
+
+	
+#pragma region State Machine	
+public:
+	void CreateStateMachine();
+
+	void InitStateMachine();
+
+protected:
+	UPROPERTY()
+	TObjectPtr<USmashCharacterStateMachine> StateMachine;
 #pragma endregion
 	
 };
