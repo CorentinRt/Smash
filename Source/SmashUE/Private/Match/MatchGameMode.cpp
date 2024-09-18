@@ -4,9 +4,12 @@
 #include "Match/MatchGameMode.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "Character/SmashCharacterInputData.h"
 #include "Arena/ArenaPlayerStart.h"
 #include "Arena/ArenaSettings.h"
 #include "Character/SmashCharacter.h"
+#include "Character/SmashCharacterSettings.h"
+#include "InputMappingContext.h"
 
 void AMatchGameMode::BeginPlay()
 {
@@ -15,6 +18,22 @@ void AMatchGameMode::BeginPlay()
 	TArray<AArenaPlayerStart*> PlayerStartsPoints;
 	FindPlayerStartActorsInArea(PlayerStartsPoints);
 	SpawnCharacters(PlayerStartsPoints);
+}
+
+USmashCharacterInputData* AMatchGameMode::LoadInputDataFromConfig()
+{
+	const USmashCharacterSettings* CharacterSettings = GetDefault<USmashCharacterSettings>();
+	if (CharacterSettings == nullptr) return nullptr;
+	
+	return CharacterSettings->InputData.LoadSynchronous();
+}
+
+UInputMappingContext* AMatchGameMode::LoadInputMappingContextFromConfig()
+{
+	const USmashCharacterSettings* CharacterSettings = GetDefault<USmashCharacterSettings>();
+	if (CharacterSettings == nullptr) return nullptr;
+	
+	return CharacterSettings->InputMappingContext.LoadSynchronous();
 }
 
 void AMatchGameMode::FindPlayerStartActorsInArea(TArray<AArenaPlayerStart*>& ResultsActors)
@@ -34,6 +53,9 @@ void AMatchGameMode::FindPlayerStartActorsInArea(TArray<AArenaPlayerStart*>& Res
 
 void AMatchGameMode::SpawnCharacters(const TArray<AArenaPlayerStart*> SpawnPoints)
 {
+	USmashCharacterInputData* InputData = LoadInputDataFromConfig();
+	UInputMappingContext* InputMappingContext = LoadInputMappingContextFromConfig();
+	
 	for (AArenaPlayerStart* SpawnPoint : SpawnPoints)
 	{
 		EAutoReceiveInput::Type InputType = SpawnPoint->AutoReceiveInput.GetValue();
@@ -46,6 +68,9 @@ void AMatchGameMode::SpawnCharacters(const TArray<AArenaPlayerStart*> SpawnPoint
 
 		if (NewCharacter == nullptr) continue;
 
+		NewCharacter->InputData = InputData;
+		NewCharacter->InputMappingContext = InputMappingContext;
+		
 		NewCharacter->AutoPossessPlayer = SpawnPoint->AutoReceiveInput;
 		NewCharacter->SetOrientX(SpawnPoint->GetStartOrientX());
 		NewCharacter->FinishSpawning(SpawnPoint->GetTransform());
