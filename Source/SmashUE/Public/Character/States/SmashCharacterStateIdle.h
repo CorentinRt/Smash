@@ -16,6 +16,8 @@ public:
 
 	virtual void StateEnter(ESmashCharacterStateID PreviousState) override;
 
+	UFUNCTION()
+	void OnInputMoveXFast(float InputMoveX);
 	virtual void StateExit(ESmashCharacterStateID NextState) override;
 
 	virtual void StateTick(float DeltaTime) override;

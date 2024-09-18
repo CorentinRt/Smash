@@ -5,6 +5,8 @@
 #include "Character/SmashCharacter.h"
 #include "Character/SmashCharacterStateID.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Character/SmashCharacterSettings.h"
+#include "Character/SmashCharacterStateMachine.h"
 
 
 ESmashCharacterStateID USmashCharacterStateRun::GetStateID()
@@ -15,13 +17,6 @@ ESmashCharacterStateID USmashCharacterStateRun::GetStateID()
 void USmashCharacterStateRun::StateEnter(ESmashCharacterStateID PreviousState)
 {
 	Super::StateEnter(PreviousState);
-	
-	GEngine->AddOnScreenDebugMessage(
-		-1,
-		3.f,
-		FColor::Cyan,
-		TEXT("Enter State Run")
-	);
 
 	Character->PlayAnimMontage(RunAnim);
 
@@ -35,27 +30,24 @@ void USmashCharacterStateRun::StateExit(ESmashCharacterStateID NextState)
 {
 	Super::StateExit(NextState);
 
-	GEngine->AddOnScreenDebugMessage(
-		-1,
-		3.f,
-		FColor::Red,
-		TEXT("Exit State Run")
-	);
-
-	Character->StopAnimMontage(RunAnim);
 }
 
 void USmashCharacterStateRun::StateTick(float DeltaTime)
 {
 	Super::StateTick(DeltaTime);
+
+	if (!Character->GetCharacterMovement()->IsMovingOnGround())
+	{
+		StateMachine->ChangeState(ESmashCharacterStateID::Fall);
+	}
 	
-	GEngine->AddOnScreenDebugMessage(
-		-1,
-		3.f,
-		FColor::Emerald,
-		TEXT("Tick State Run")
-		
-	);
-	if (MovementComponent != nullptr)
-		MovementComponent->AddInputVector(Character->GetActorForwardVector() * Character->GetOrientX());
+	if (FMath::Abs(Character->GetInputMoveX()) < CharacterSettings->InputMoveXThreshold)
+	{
+		StateMachine->ChangeState(ESmashCharacterStateID::Idle);
+	}
+	else
+	{
+		Character->SetOrientX(Character->GetInputMoveX());
+		Character->AddMovementInput(FVector::ForwardVector, Character->GetOrientX());
+	}
 }

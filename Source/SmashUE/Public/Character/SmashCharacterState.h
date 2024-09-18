@@ -7,6 +7,7 @@
 #include "SmashCharacterState.generated.h"
 
 
+class USmashCharacterSettings;
 enum class ESmashCharacterStateID : uint8;
 
 class ASmashCharacter;
@@ -37,4 +38,7 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<USmashCharacterStateMachine> StateMachine;
+
+	UPROPERTY()
+	const USmashCharacterSettings* CharacterSettings;
 };

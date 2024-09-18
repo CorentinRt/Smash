@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputActionValue.h"
 #include "GameFramework/Character.h"
 #include "SmashCharacter.generated.h"
 
@@ -72,5 +73,40 @@ protected:
 	void SetupMappingContextIntoController() const;
 
 #pragma endregion
+
+#pragma region Input Move
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInputMoveXEvent, float, InputMoveX);
 	
+public:
+	float GetInputMoveX() const;
+
+	UPROPERTY()
+	FInputMoveXEvent InputMoveXFastEvent;
+
+protected:
+	UPROPERTY()
+	float InputMoveX = 0.f;
+
+private:
+	void OnInputMoveX(const FInputActionValue& InputActionValue);
+	void OnInputMoveXFast(const FInputActionValue& InputActionValue);
+	void BindInputMoveXAxisAndActions(UEnhancedInputComponent* EnhancedInputComponent);
+	
+#pragma endregion
+
+#pragma region Input Jump
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInputJumpEvent, float, InputJumpValue);
+public:
+	UPROPERTY()
+	FInputJumpEvent InputJumpEvent;
+
+protected:
+	UPROPERTY()
+	float InputJumpValue = 0.f;
+
+private:
+	void OnInputJump(const FInputActionValue& InputActionValue);
+#pragma endregion 
 };

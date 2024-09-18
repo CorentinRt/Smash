@@ -8,6 +8,7 @@
 #include "SmashCharacterStateRun.generated.h"
 
 class UCharacterMovementComponent;
+class USmashCharacterSettings;
 
 UCLASS(ClassGroup=(SmashCharacterState), meta=(BlueprintSpawnableComponent))
 class SMASHUE_API USmashCharacterStateRun : public USmashCharacterState
@@ -32,4 +33,5 @@ public:
 
 	UPROPERTY()
 	UCharacterMovementComponent* MovementComponent;
+
 };
