@@ -1,38 +1,37 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Character/States/SmashCharacterStateWalk.h"
-
+#include "Character/States/SmashCharacterStateRun.h"
 #include "Character/SmashCharacter.h"
 #include "Character/SmashCharacterStateID.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
-ESmashCharacterStateID USmashCharacterStateWalk::GetStateID()
+ESmashCharacterStateID USmashCharacterStateRun::GetStateID()
 {
-	return ESmashCharacterStateID::Walk;
+	return ESmashCharacterStateID::Run;
 }
 
-void USmashCharacterStateWalk::StateEnter(ESmashCharacterStateID PreviousState)
+void USmashCharacterStateRun::StateEnter(ESmashCharacterStateID PreviousState)
 {
 	Super::StateEnter(PreviousState);
-
+	
 	GEngine->AddOnScreenDebugMessage(
 		-1,
 		3.f,
 		FColor::Cyan,
-		TEXT("Enter State Walk")
+		TEXT("Enter State Run")
 	);
 
-	Character->PlayAnimMontage(WalkAnim);
+	Character->PlayAnimMontage(RunAnim);
 
 	MovementComponent = Character->GetCharacterMovement();
 
 	if (MovementComponent != nullptr)
-		MovementComponent->MaxWalkSpeed = MoveSpeedMax;
+		MovementComponent->MaxWalkSpeed = RunMoveSpeedMax;
 }
 
-void USmashCharacterStateWalk::StateExit(ESmashCharacterStateID NextState)
+void USmashCharacterStateRun::StateExit(ESmashCharacterStateID NextState)
 {
 	Super::StateExit(NextState);
 
@@ -40,21 +39,21 @@ void USmashCharacterStateWalk::StateExit(ESmashCharacterStateID NextState)
 		-1,
 		3.f,
 		FColor::Red,
-		TEXT("Exit State Walk")
+		TEXT("Exit State Run")
 	);
 
-	Character->StopAnimMontage(WalkAnim);
+	Character->StopAnimMontage(RunAnim);
 }
 
-void USmashCharacterStateWalk::StateTick(float DeltaTime)
+void USmashCharacterStateRun::StateTick(float DeltaTime)
 {
 	Super::StateTick(DeltaTime);
-
+	
 	GEngine->AddOnScreenDebugMessage(
 		-1,
 		3.f,
 		FColor::Emerald,
-		TEXT("Tick State Walk")
+		TEXT("Tick State Run")
 		
 	);
 	if (MovementComponent != nullptr)
