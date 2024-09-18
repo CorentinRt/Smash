@@ -37,7 +37,4 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<USmashCharacterStateMachine> StateMachine;
-
-	UPROPERTY(EditAnywhere)
-	UAnimMontage* Montage;
 };

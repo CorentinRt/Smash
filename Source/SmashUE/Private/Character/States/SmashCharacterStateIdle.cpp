@@ -22,7 +22,7 @@ void USmashCharacterStateIdle::StateEnter(ESmashCharacterStateID PreviousState)
 		TEXT("Enter State Idle")
 	);
 
-	Character->PlayAnimMontage(Montage);
+	Character->PlayAnimMontage(IdleAnim);
 }
 
 void USmashCharacterStateIdle::StateExit(ESmashCharacterStateID NextState)
@@ -36,7 +36,7 @@ void USmashCharacterStateIdle::StateExit(ESmashCharacterStateID NextState)
 		TEXT("Exit State Idle")
 	);
 
-	Character->StopAnimMontage(Montage);
+	Character->StopAnimMontage(IdleAnim);
 }
 
 void USmashCharacterStateIdle::StateTick(float DeltaTime)

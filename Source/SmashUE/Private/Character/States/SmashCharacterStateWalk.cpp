@@ -24,7 +24,7 @@ void USmashCharacterStateWalk::StateEnter(ESmashCharacterStateID PreviousState)
 		TEXT("Enter State Walk")
 	);
 
-	Character->PlayAnimMontage(Montage);
+	Character->PlayAnimMontage(WalkAnim);
 }
 
 void USmashCharacterStateWalk::StateExit(ESmashCharacterStateID NextState)
@@ -38,7 +38,7 @@ void USmashCharacterStateWalk::StateExit(ESmashCharacterStateID NextState)
 		TEXT("Exit State Walk")
 	);
 
-	Character->StopAnimMontage(Montage);
+	Character->StopAnimMontage(WalkAnim);
 }
 
 void USmashCharacterStateWalk::StateTick(float DeltaTime)
