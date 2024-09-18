@@ -56,6 +56,14 @@ USmashCharacterState* USmashCharacterStateMachine::GetState(ESmashCharacterState
 		return nullptr;
 }
 
+void USmashCharacterStateMachine::Tick(float DeltaTime)
+{
+	if (CurrentState == nullptr)
+		return;
+
+	CurrentState->StateTick(DeltaTime);
+}
+
 void USmashCharacterStateMachine::FindStates()
 {
 	TArray<UActorComponent*> FoundComponents = Character->K2_GetComponentsByClass(USmashCharacterState::StaticClass());
