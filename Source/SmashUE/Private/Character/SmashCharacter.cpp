@@ -124,6 +124,7 @@ void ASmashCharacter::BindInputMoveXAxisAndActions(UEnhancedInputComponent* Enha
 {
 	if (InputData == nullptr) return;
 
+#pragma region Bind Input Move X
 	if (InputData->InputActionMoveX)
 	{
 		EnhancedInputComponent->BindAction(
@@ -147,7 +148,9 @@ void ASmashCharacter::BindInputMoveXAxisAndActions(UEnhancedInputComponent* Enha
 			&ASmashCharacter::OnInputMoveX
 		);
 	}
-
+#pragma endregion
+	
+#pragma region Bind Input MoveFast
 	if (InputData->InputActionMoveXFast)
 	{
 		EnhancedInputComponent->BindAction(
@@ -157,7 +160,9 @@ void ASmashCharacter::BindInputMoveXAxisAndActions(UEnhancedInputComponent* Enha
 			&ASmashCharacter::OnInputMoveXFast
 		);
 	}
-
+#pragma endregion
+	
+#pragma region Bind Input Jump
 	if (InputData->InputActionJump)
 	{
 		EnhancedInputComponent->BindAction(
@@ -167,6 +172,7 @@ void ASmashCharacter::BindInputMoveXAxisAndActions(UEnhancedInputComponent* Enha
 			&ASmashCharacter::OnInputJump
 		);
 	}
+#pragma endregion
 }
 
 

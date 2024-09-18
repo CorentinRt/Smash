@@ -12,7 +12,7 @@ ESmashCharacterStateID USmashCharacterStateJump::GetStateID()
 	return ESmashCharacterStateID::Jump;
 }
 
-void USmashCharacterStateJump::OnInputJump(float InputMoveX)
+void USmashCharacterStateJump::Jump()
 {
 	GEngine->AddOnScreenDebugMessage(
 		-1,
@@ -21,22 +21,19 @@ void USmashCharacterStateJump::OnInputJump(float InputMoveX)
 		TEXT("Jump")
 	);
 	Character->Jump();
+	Character->PlayAnimMontage(JumpAnim);
 }
 
 void USmashCharacterStateJump::StateEnter(ESmashCharacterStateID PreviousState)
 {
 	Super::StateEnter(PreviousState);
-	
-	Character->PlayAnimMontage(JumpAnim);
 
-	Character->InputJumpEvent.AddDynamic(this, &USmashCharacterStateJump::OnInputJump);
+	Jump();
 }
 
 void USmashCharacterStateJump::StateExit(ESmashCharacterStateID NextState)
 {
 	Super::StateExit(NextState);
-	
-	Character->InputJumpEvent.RemoveDynamic(this, &USmashCharacterStateJump::OnInputJump);
 }
 
 void USmashCharacterStateJump::StateTick(float DeltaTime)

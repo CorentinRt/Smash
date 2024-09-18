@@ -14,6 +14,15 @@ ESmashCharacterStateID USmashCharacterStateWalk::GetStateID()
 	return ESmashCharacterStateID::Walk;
 }
 
+void USmashCharacterStateWalk::OnInputJump(float InputMoveX)
+{
+	StateMachine->ChangeState(ESmashCharacterStateID::Jump);
+}
+void USmashCharacterStateWalk::OnInputMoveXFast(float InputMoveX)
+{
+	StateMachine->ChangeState(ESmashCharacterStateID::Run);
+}
+
 void USmashCharacterStateWalk::StateEnter(ESmashCharacterStateID PreviousState)
 {
 	Super::StateEnter(PreviousState);
@@ -26,18 +35,16 @@ void USmashCharacterStateWalk::StateEnter(ESmashCharacterStateID PreviousState)
 		MovementComponent->MaxWalkSpeed = MoveSpeedMax;
 
 	Character->InputMoveXFastEvent.AddDynamic(this, &USmashCharacterStateWalk::OnInputMoveXFast);
+	Character->InputJumpEvent.AddDynamic(this, &USmashCharacterStateWalk::OnInputJump);
 }
 
-void USmashCharacterStateWalk::OnInputMoveXFast(float InputMoveX)
-{
-	StateMachine->ChangeState(ESmashCharacterStateID::Run);
-}
 
 void USmashCharacterStateWalk::StateExit(ESmashCharacterStateID NextState)
 {
 	Super::StateExit(NextState);
 	
 	Character->InputMoveXFastEvent.RemoveDynamic(this, &USmashCharacterStateWalk::OnInputMoveXFast);
+	Character->InputJumpEvent.AddDynamic(this, &USmashCharacterStateWalk::OnInputJump);
 }
 
 void USmashCharacterStateWalk::StateTick(float DeltaTime)
