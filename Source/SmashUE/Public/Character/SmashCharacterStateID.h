@@ -13,5 +13,6 @@ enum class ESmashCharacterStateID : uint8
 	Run,
 	Jump,
 	Fall,
-	Crouch
+	Crouch,
+	DoubleJump
 };

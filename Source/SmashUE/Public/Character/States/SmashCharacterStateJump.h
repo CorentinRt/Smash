@@ -17,6 +17,9 @@ public:
 	virtual ESmashCharacterStateID GetStateID() override;
 
 	UFUNCTION()
+	void OnInputDoubleJump(float InputDoubleJump);
+	
+	UFUNCTION()
 	void Jump();
 
 	virtual void StateEnter(ESmashCharacterStateID PreviousState) override;

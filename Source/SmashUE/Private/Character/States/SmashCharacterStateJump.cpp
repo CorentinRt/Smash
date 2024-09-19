@@ -12,6 +12,11 @@ ESmashCharacterStateID USmashCharacterStateJump::GetStateID()
 	return ESmashCharacterStateID::Jump;
 }
 
+void USmashCharacterStateJump::OnInputDoubleJump(float InputDoubleJump)
+{
+	StateMachine->ChangeState(ESmashCharacterStateID::DoubleJump);
+}
+
 void USmashCharacterStateJump::Jump()
 {
 	GEngine->AddOnScreenDebugMessage(
@@ -29,18 +34,22 @@ void USmashCharacterStateJump::StateEnter(ESmashCharacterStateID PreviousState)
 	Super::StateEnter(PreviousState);
 
 	Jump();
+
+	Character->InputJumpEvent.AddDynamic(this, &USmashCharacterStateJump::OnInputDoubleJump);
 }
 
 void USmashCharacterStateJump::StateExit(ESmashCharacterStateID NextState)
 {
 	Super::StateExit(NextState);
+	
+	Character->InputJumpEvent.RemoveDynamic(this, &USmashCharacterStateJump::OnInputDoubleJump);
 }
 
 void USmashCharacterStateJump::StateTick(float DeltaTime)
 {
 	Super::StateTick(DeltaTime);
 
-	if (Character->GetVelocity().Z < 0.f)
+	if (Character->GetVelocity().Z <= 0.f)
 	{
 		StateMachine->ChangeState(ESmashCharacterStateID::Fall);
 	}
