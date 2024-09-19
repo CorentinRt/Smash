@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Character/SmashCharacterState.h"
-#include "SmashCharacterStateIdle.generated.h"
+#include "SmashCharacterStateCrouch.generated.h"
+
 
 UCLASS(ClassGroup=(SmashCharacterState), meta=(BlueprintSpawnableComponent))
-class SMASHUE_API USmashCharacterStateIdle : public USmashCharacterState
+class SMASHUE_API USmashCharacterStateCrouch : public USmashCharacterState
 {
 	GENERATED_BODY()
 
@@ -15,19 +16,19 @@ public:
 	virtual ESmashCharacterStateID GetStateID() override;
 
 	UFUNCTION()
-	void OnInputJump(float InputJump);
-
-	UFUNCTION()
-	void OnInputCrouch(float InputCrouch);
+	void OnInputJump(float InputMoveX);
 	
 	virtual void StateEnter(ESmashCharacterStateID PreviousState) override;
 
-	UFUNCTION()
-	void OnInputMoveXFast(float InputMoveX);
 	virtual void StateExit(ESmashCharacterStateID NextState) override;
 
 	virtual void StateTick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere)
-	UAnimMontage* IdleAnim;
+	UAnimMontage* CrouchAnim;
+
+	UPROPERTY(EditAnywhere)
+	float MoveCrouchSpeedMax = 150.f;
+
+	
 };

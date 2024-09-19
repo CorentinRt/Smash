@@ -18,6 +18,15 @@ void USmashCharacterStateWalk::OnInputJump(float InputMoveX)
 {
 	StateMachine->ChangeState(ESmashCharacterStateID::Jump);
 }
+
+void USmashCharacterStateWalk::OnInputCrouch(float InputCrouch)
+{
+	if (InputCrouch < -0.1f)
+	{
+		StateMachine->ChangeState(ESmashCharacterStateID::Crouch);
+	}
+}
+
 void USmashCharacterStateWalk::OnInputMoveXFast(float InputMoveX)
 {
 	StateMachine->ChangeState(ESmashCharacterStateID::Run);
@@ -36,6 +45,7 @@ void USmashCharacterStateWalk::StateEnter(ESmashCharacterStateID PreviousState)
 
 	Character->InputMoveXFastEvent.AddDynamic(this, &USmashCharacterStateWalk::OnInputMoveXFast);
 	Character->InputJumpEvent.AddDynamic(this, &USmashCharacterStateWalk::OnInputJump);
+	Character->InputCrouchEvent.AddDynamic(this, &USmashCharacterStateWalk::OnInputCrouch);
 }
 
 
@@ -44,7 +54,8 @@ void USmashCharacterStateWalk::StateExit(ESmashCharacterStateID NextState)
 	Super::StateExit(NextState);
 	
 	Character->InputMoveXFastEvent.RemoveDynamic(this, &USmashCharacterStateWalk::OnInputMoveXFast);
-	Character->InputJumpEvent.AddDynamic(this, &USmashCharacterStateWalk::OnInputJump);
+	Character->InputJumpEvent.RemoveDynamic(this, &USmashCharacterStateWalk::OnInputJump);
+	Character->InputCrouchEvent.RemoveDynamic(this, &USmashCharacterStateWalk::OnInputCrouch);
 }
 
 void USmashCharacterStateWalk::StateTick(float DeltaTime)

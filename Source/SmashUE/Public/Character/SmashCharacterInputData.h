@@ -24,4 +24,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UInputAction> InputActionJump;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UInputAction> InputActionCrouch;
 };

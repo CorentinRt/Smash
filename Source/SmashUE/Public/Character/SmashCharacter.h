@@ -108,5 +108,22 @@ protected:
 
 private:
 	void OnInputJump(const FInputActionValue& InputActionValue);
-#pragma endregion 
+#pragma endregion
+
+#pragma region Input Crouch
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInputCrouchEvent, float, InputCrouchValue);
+	
+public:
+	FInputCrouchEvent InputCrouchEvent;
+
+	float GetInputCrouchValue() const;
+	
+protected:
+	float InputCrouchValue = 0.f;
+
+private:
+	void OnInputCrouch(const FInputActionValue& InputActionValue);
+	
+#pragma endregion
 };
