@@ -6,12 +6,44 @@
 #include "EnhancedInputSubsystems.h"
 #include "Character/SmashCharacterInputData.h"
 #include "EnhancedInputComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/DynamicMeshComponent.h"
+
+void ASmashCharacter::OnCollisionEnter(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                       UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor == nullptr) return;
+	
+	if (OtherActor->Tags.Contains("OneWayPlatform"))
+	{
+		GetCapsuleComponent()->IgnoreComponentWhenMoving(OtherActor->GetComponentByClass<UDynamicMeshComponent>(), true);
+	}
+}
+
+void ASmashCharacter::OnCollisionExit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor == nullptr) return;
+	
+	if (OtherActor->Tags.Contains("OneWayPlatform"))
+	{
+		GetCapsuleComponent()->IgnoreComponentWhenMoving(OtherActor->GetComponentByClass<UDynamicMeshComponent>(), false);
+	}
+}
 
 // Sets default values
 ASmashCharacter::ASmashCharacter()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	if (GetCapsuleComponent())
+	{
+		GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ASmashCharacter::OnCollisionEnter);
+
+		GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ASmashCharacter::OnCollisionExit);
+	}
+    
 }
 
 // Called when the game starts or when spawned
@@ -143,33 +175,78 @@ float ASmashCharacter::GetInputMoveYValue() const
 	return InputMoveYValue;
 }
 
+void ASmashCharacter::CheckOneWayFloor()
+{
+	FVector Start = GetActorLocation();
+	FVector End = Start - FVector(0, 0, 100.f);  // Vérifie à 500 unités sous le personnage
+
+	FHitResult Hit;
+	FCollisionQueryParams TraceParams(FName(TEXT("Trace")), true, this);
+	bool bHit = GetWorld()->LineTraceSingleByChannel(
+		Hit,
+		Start,
+		End,
+		ECC_Visibility,
+		TraceParams
+	);
+
+	if (bHit && Hit.GetActor())
+	{
+		AActor* HitActor = Hit.GetActor();
+		if (HitActor)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Objet sous le personnage: %s"), *HitActor->GetName());
+
+			if (HitActor->Tags.Contains("OneWayPlatform"))
+			{
+
+				GEngine->AddOnScreenDebugMessage(
+					-1,
+					3.f,
+					FColor::Red,
+					TEXT("One Way Platform")
+				);
+				
+				GetCapsuleComponent()->IgnoreComponentWhenMoving(HitActor->GetComponentByClass<UDynamicMeshComponent>(), true);
+			}
+		}
+	}
+}
+
 void ASmashCharacter::BindInputMoveYAndActions(UEnhancedInputComponent* EnhancedInputComponent)
 {
 	if (InputData == nullptr) return;
 	
-#pragma region Bind Input Crouch
+#pragma region Bind Input Move Y
 
-	if (InputData->InputActionCrouch)
+	if (InputData->InputActionMoveY)
 	{
 		EnhancedInputComponent->BindAction(
-			InputData->InputActionCrouch,
+			InputData->InputActionMoveY,
 			ETriggerEvent::Started,
 			this,
 			&ASmashCharacter::OnInputMoveY
 		);
 
 		EnhancedInputComponent->BindAction(
-			InputData->InputActionCrouch,
+			InputData->InputActionMoveY,
 			ETriggerEvent::Triggered,
 			this,
 			&ASmashCharacter::OnInputMoveY
 		);
 		
 		EnhancedInputComponent->BindAction(
-			InputData->InputActionCrouch,
+			InputData->InputActionMoveY,
 			ETriggerEvent::Completed,
 			this,
 			&ASmashCharacter::OnInputMoveY
+		);
+
+		EnhancedInputComponent->BindAction(
+			InputData->InputActionMoveYFast,
+			ETriggerEvent::Triggered,
+			this,
+			&ASmashCharacter::OnInputMoveYFast
 		);
 	}
 
@@ -180,6 +257,14 @@ void ASmashCharacter::OnInputMoveY(const FInputActionValue& InputActionValue)
 {
 	InputMoveYValue = InputActionValue.Get<float>();
 	InputMoveYEvent.Broadcast(InputMoveYValue);
+}
+
+void ASmashCharacter::OnInputMoveYFast(const FInputActionValue& InputActionValue)
+{
+	InputMoveYValue = InputActionValue.Get<float>();
+	InputMoveYFastEvent.Broadcast(InputMoveYValue);
+	
+	CheckOneWayFloor();
 }
 
 void ASmashCharacter::BindInputMoveXAxisAndActions(UEnhancedInputComponent* EnhancedInputComponent)

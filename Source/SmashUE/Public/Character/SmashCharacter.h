@@ -18,6 +18,11 @@ class SMASHUE_API ASmashCharacter : public ACharacter
 	
 #pragma region Unreal Defaults
 public:
+	UFUNCTION()
+	void OnCollisionEnter(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnCollisionExit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 	// Sets default values for this character's properties
 	ASmashCharacter();
 
@@ -114,21 +119,28 @@ private:
 	void OnInputJump(const FInputActionValue& InputActionValue);
 #pragma endregion
 
-#pragma region Input Crouch
+#pragma region Input Move Y
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInputCrouchEvent, float, InputCrouchValue);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInputMoveYEvent, float, InputMoveYValue);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInputMoveYFastEvent, float, InputMoveYFastValue);
 	
 public:
-	FInputCrouchEvent InputMoveYEvent;
+	FInputMoveYEvent InputMoveYEvent;
 
+	FInputMoveYFastEvent InputMoveYFastEvent;
+	
 	float GetInputMoveYValue() const;
 	
 protected:
 	float InputMoveYValue = 0.f;
 
+	UFUNCTION()
+	void CheckOneWayFloor();
+	
 private:
 	void BindInputMoveYAndActions(UEnhancedInputComponent* EnhancedInputComponent);
 	void OnInputMoveY(const FInputActionValue& InputActionValue);
+	void OnInputMoveYFast(const FInputActionValue& InputActionValue);
 	
 #pragma endregion
 };
