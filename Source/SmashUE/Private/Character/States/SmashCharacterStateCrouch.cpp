@@ -32,12 +32,7 @@ void USmashCharacterStateCrouch::StateEnter(ESmashCharacterStateID PreviousState
 
 	Character->PlayAnimMontage(CrouchAnim);
 
-	UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();
-
-	/*
-	if (CapsuleComponent != nullptr)
-		CapsuleComponent->SetCapsuleHalfHeight(CapsuleComponent->GetUnscaledCapsuleHalfHeight() / 2.f);
-	*/
+	Character->Crouch();
 	
 	Character->InputJumpEvent.AddDynamic(this, &USmashCharacterStateCrouch::OnInputJump);
 }
@@ -46,12 +41,7 @@ void USmashCharacterStateCrouch::StateExit(ESmashCharacterStateID NextState)
 {
 	Super::StateExit(NextState);
 	
-	UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();
-
-	/*
-	if (CapsuleComponent != nullptr)
-		CapsuleComponent->SetCapsuleHalfHeight(CapsuleComponent->GetUnscaledCapsuleHalfHeight() * 2.f);
-	*/
+	Character->UnCrouch();
 	
 	Character->InputJumpEvent.RemoveDynamic(this, &USmashCharacterStateCrouch::OnInputJump);
 }

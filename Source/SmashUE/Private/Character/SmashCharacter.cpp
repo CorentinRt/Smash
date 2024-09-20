@@ -114,9 +114,6 @@ void ASmashCharacter::OnInputMoveXFast(const FInputActionValue& InputActionValue
 
 void ASmashCharacter::OnInputJump(const FInputActionValue& InputActionValue)
 {
-	if (StateMachine == nullptr) return;
-		StateMachine->ChangeState(ESmashCharacterStateID::Jump);
-
 	InputJumpValue = InputActionValue.Get<float>();
 	InputJumpEvent.Broadcast(InputJumpValue);
 }
