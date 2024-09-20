@@ -45,7 +45,7 @@ void USmashCharacterStateWalk::StateEnter(ESmashCharacterStateID PreviousState)
 
 	Character->InputMoveXFastEvent.AddDynamic(this, &USmashCharacterStateWalk::OnInputMoveXFast);
 	Character->InputJumpEvent.AddDynamic(this, &USmashCharacterStateWalk::OnInputJump);
-	Character->InputCrouchEvent.AddDynamic(this, &USmashCharacterStateWalk::OnInputCrouch);
+	Character->InputMoveYEvent.AddDynamic(this, &USmashCharacterStateWalk::OnInputCrouch);
 }
 
 
@@ -55,7 +55,7 @@ void USmashCharacterStateWalk::StateExit(ESmashCharacterStateID NextState)
 	
 	Character->InputMoveXFastEvent.RemoveDynamic(this, &USmashCharacterStateWalk::OnInputMoveXFast);
 	Character->InputJumpEvent.RemoveDynamic(this, &USmashCharacterStateWalk::OnInputJump);
-	Character->InputCrouchEvent.RemoveDynamic(this, &USmashCharacterStateWalk::OnInputCrouch);
+	Character->InputMoveYEvent.RemoveDynamic(this, &USmashCharacterStateWalk::OnInputCrouch);
 }
 
 void USmashCharacterStateWalk::StateTick(float DeltaTime)

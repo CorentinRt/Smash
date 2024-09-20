@@ -50,7 +50,7 @@ void USmashCharacterStateCrouch::StateTick(float DeltaTime)
 {
 	Super::StateTick(DeltaTime);
 
-	if (Character->GetInputCrouchValue() >= -0.1f)
+	if (Character->GetInputMoveYValue() >= -0.1f)
 	{
 		StateMachine->ChangeState(ESmashCharacterStateID::Idle);
 	}

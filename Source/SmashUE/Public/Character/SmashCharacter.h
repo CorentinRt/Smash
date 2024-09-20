@@ -90,11 +90,14 @@ protected:
 
 private:
 	void OnInputMoveX(const FInputActionValue& InputActionValue);
-	void OnInputMoveXFast(const FInputActionValue& InputActionValue);
 	void BindInputMoveXAxisAndActions(UEnhancedInputComponent* EnhancedInputComponent);
-	
 #pragma endregion
 
+#pragma region Input Move X Fast
+	void OnInputMoveXFast(const FInputActionValue& InputActionValue);
+	void BindInputMoveXFastAndActions(UEnhancedInputComponent* EnhancedInputComponent);
+#pragma endregion
+	
 #pragma region Input Jump
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInputJumpEvent, float, InputJumpValue);
@@ -107,6 +110,7 @@ protected:
 	float InputJumpValue = 0.f;
 
 private:
+	void BindInputJumpAndActions(UEnhancedInputComponent* EnhancedInputComponent);
 	void OnInputJump(const FInputActionValue& InputActionValue);
 #pragma endregion
 
@@ -115,15 +119,16 @@ private:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInputCrouchEvent, float, InputCrouchValue);
 	
 public:
-	FInputCrouchEvent InputCrouchEvent;
+	FInputCrouchEvent InputMoveYEvent;
 
-	float GetInputCrouchValue() const;
+	float GetInputMoveYValue() const;
 	
 protected:
-	float InputCrouchValue = 0.f;
+	float InputMoveYValue = 0.f;
 
 private:
-	void OnInputCrouch(const FInputActionValue& InputActionValue);
+	void BindInputMoveYAndActions(UEnhancedInputComponent* EnhancedInputComponent);
+	void OnInputMoveY(const FInputActionValue& InputActionValue);
 	
 #pragma endregion
 };

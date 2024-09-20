@@ -39,7 +39,7 @@ void USmashCharacterStateRun::StateEnter(ESmashCharacterStateID PreviousState)
 		MovementComponent->MaxWalkSpeed = RunMoveSpeedMax;
 
 	Character->InputJumpEvent.AddDynamic(this, &USmashCharacterStateRun::OnInputJump);
-	Character->InputCrouchEvent.AddDynamic(this, &USmashCharacterStateRun::OnInputCrouch);
+	Character->InputMoveYEvent.AddDynamic(this, &USmashCharacterStateRun::OnInputCrouch);
 }
 
 void USmashCharacterStateRun::StateExit(ESmashCharacterStateID NextState)
@@ -47,7 +47,7 @@ void USmashCharacterStateRun::StateExit(ESmashCharacterStateID NextState)
 	Super::StateExit(NextState);
 
 	Character->InputJumpEvent.RemoveDynamic(this, &USmashCharacterStateRun::OnInputJump);
-	Character->InputCrouchEvent.RemoveDynamic(this, &USmashCharacterStateRun::OnInputCrouch);
+	Character->InputMoveYEvent.RemoveDynamic(this, &USmashCharacterStateRun::OnInputCrouch);
 }
 
 void USmashCharacterStateRun::StateTick(float DeltaTime)

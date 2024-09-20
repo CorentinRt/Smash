@@ -41,6 +41,9 @@ void ASmashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	if (EnhancedInputComponent == nullptr) return;
 	
 	BindInputMoveXAxisAndActions(EnhancedInputComponent);
+	BindInputMoveXFastAndActions(EnhancedInputComponent);
+	BindInputJumpAndActions(EnhancedInputComponent);
+	BindInputMoveYAndActions(EnhancedInputComponent);
 }
 
 float ASmashCharacter::GetOrientX() const
@@ -112,21 +115,71 @@ void ASmashCharacter::OnInputMoveXFast(const FInputActionValue& InputActionValue
 	InputMoveXFastEvent.Broadcast(InputMoveX);
 }
 
+void ASmashCharacter::BindInputJumpAndActions(UEnhancedInputComponent* EnhancedInputComponent)
+{
+	if (InputData == nullptr) return;
+	
+#pragma region Bind Input Jump
+	if (InputData->InputActionJump)
+	{
+		EnhancedInputComponent->BindAction(
+			InputData->InputActionJump,
+			ETriggerEvent::Started,
+			this,
+			&ASmashCharacter::OnInputJump
+		);
+	}
+#pragma endregion
+}
+
 void ASmashCharacter::OnInputJump(const FInputActionValue& InputActionValue)
 {
 	InputJumpValue = InputActionValue.Get<float>();
 	InputJumpEvent.Broadcast(InputJumpValue);
 }
 
-float ASmashCharacter::GetInputCrouchValue() const
+float ASmashCharacter::GetInputMoveYValue() const
 {
-	return InputCrouchValue;
+	return InputMoveYValue;
 }
 
-void ASmashCharacter::OnInputCrouch(const FInputActionValue& InputActionValue)
+void ASmashCharacter::BindInputMoveYAndActions(UEnhancedInputComponent* EnhancedInputComponent)
 {
-	InputCrouchValue = InputActionValue.Get<float>();
-	InputCrouchEvent.Broadcast(InputCrouchValue);
+	if (InputData == nullptr) return;
+	
+#pragma region Bind Input Crouch
+
+	if (InputData->InputActionCrouch)
+	{
+		EnhancedInputComponent->BindAction(
+			InputData->InputActionCrouch,
+			ETriggerEvent::Started,
+			this,
+			&ASmashCharacter::OnInputMoveY
+		);
+
+		EnhancedInputComponent->BindAction(
+			InputData->InputActionCrouch,
+			ETriggerEvent::Triggered,
+			this,
+			&ASmashCharacter::OnInputMoveY
+		);
+		
+		EnhancedInputComponent->BindAction(
+			InputData->InputActionCrouch,
+			ETriggerEvent::Completed,
+			this,
+			&ASmashCharacter::OnInputMoveY
+		);
+	}
+
+#pragma endregion 
+}
+
+void ASmashCharacter::OnInputMoveY(const FInputActionValue& InputActionValue)
+{
+	InputMoveYValue = InputActionValue.Get<float>();
+	InputMoveYEvent.Broadcast(InputMoveYValue);
 }
 
 void ASmashCharacter::BindInputMoveXAxisAndActions(UEnhancedInputComponent* EnhancedInputComponent)
@@ -159,6 +212,12 @@ void ASmashCharacter::BindInputMoveXAxisAndActions(UEnhancedInputComponent* Enha
 	}
 #pragma endregion
 	
+}
+
+void ASmashCharacter::BindInputMoveXFastAndActions(UEnhancedInputComponent* EnhancedInputComponent)
+{
+	if (InputData == nullptr) return;
+	
 #pragma region Bind Input MoveFast
 	if (InputData->InputActionMoveXFast)
 	{
@@ -170,46 +229,6 @@ void ASmashCharacter::BindInputMoveXAxisAndActions(UEnhancedInputComponent* Enha
 		);
 	}
 #pragma endregion
-	
-#pragma region Bind Input Jump
-	if (InputData->InputActionJump)
-	{
-		EnhancedInputComponent->BindAction(
-			InputData->InputActionJump,
-			ETriggerEvent::Started,
-			this,
-			&ASmashCharacter::OnInputJump
-		);
-	}
-#pragma endregion
-
-#pragma region Bind Input Crouch
-
-	if (InputData->InputActionCrouch)
-	{
-		EnhancedInputComponent->BindAction(
-			InputData->InputActionCrouch,
-			ETriggerEvent::Started,
-			this,
-			&ASmashCharacter::OnInputCrouch
-		);
-
-		EnhancedInputComponent->BindAction(
-			InputData->InputActionCrouch,
-			ETriggerEvent::Triggered,
-			this,
-			&ASmashCharacter::OnInputCrouch
-		);
-		
-		EnhancedInputComponent->BindAction(
-			InputData->InputActionCrouch,
-			ETriggerEvent::Completed,
-			this,
-			&ASmashCharacter::OnInputCrouch
-		);
-	}
-
-#pragma endregion 
 }
 
 

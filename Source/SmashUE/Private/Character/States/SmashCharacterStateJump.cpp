@@ -49,6 +49,9 @@ void USmashCharacterStateJump::StateTick(float DeltaTime)
 {
 	Super::StateTick(DeltaTime);
 
+	Character->SetOrientX(Character->GetInputMoveX());
+	Character->AddMovementInput(FVector::ForwardVector, Character->GetOrientX());
+	
 	if (Character->GetVelocity().Z <= 0.f)
 	{
 		StateMachine->ChangeState(ESmashCharacterStateID::Fall);

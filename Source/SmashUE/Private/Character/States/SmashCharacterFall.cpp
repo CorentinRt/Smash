@@ -30,6 +30,9 @@ void USmashCharacterFall::StateTick(float DeltaTime)
 {
 	Super::StateTick(DeltaTime);
 
+	Character->SetOrientX(Character->GetInputMoveX());
+	Character->AddMovementInput(FVector::ForwardVector, Character->GetOrientX());
+	
 	if (Character->GetMovementComponent()->IsMovingOnGround())
 	{
 		StateMachine->ChangeState(ESmashCharacterStateID::Idle);
