@@ -17,7 +17,7 @@ class LOCALMULTIPLAYER_API ULocalMultiplayerSubsystem : public UGameInstanceSubs
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void CreateAndInitPlayer(ELocalMultiplayerInputMappingType MappingType);
+	void CreateAndInitPlayers(ELocalMultiplayerInputMappingType MappingType);
 	
 	int GetAssignedPlayerIndexFromKeyboardProfileIndex(int KeyboardProfileIndex);
 
@@ -33,7 +33,7 @@ public:
 
 protected:
 	UPROPERTY()
-	uint8 LastAssignedPlayerIndex = 0;
+	uint8 LastAssignedPlayerIndex = -1;
 
 	UPROPERTY()
 	TMap<int, int> PlayerIndexFromKeyboardProfileIndex;
