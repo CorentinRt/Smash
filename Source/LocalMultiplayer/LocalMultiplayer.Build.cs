@@ -9,7 +9,7 @@ public class LocalMultiplayer : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "Core",
+                "Core", "InputCore"
             }
         );
 

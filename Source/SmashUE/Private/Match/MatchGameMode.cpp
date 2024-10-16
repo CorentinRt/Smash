@@ -10,14 +10,18 @@
 #include "Character/SmashCharacter.h"
 #include "Character/SmashCharacterSettings.h"
 #include "InputMappingContext.h"
+#include "LocalMultiplayerSettings.h"
+#include "LocalMultiplayerSubsystem.h"
 
 void AMatchGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+	CreateAndInitPlayers();
 
 	TArray<AArenaPlayerStart*> PlayerStartsPoints;
 	FindPlayerStartActorsInArea(PlayerStartsPoints);
 	SpawnCharacters(PlayerStartsPoints);
+
 }
 
 USmashCharacterInputData* AMatchGameMode::LoadInputDataFromConfig()
@@ -99,4 +103,15 @@ TSubclassOf<ASmashCharacter> AMatchGameMode::GetSmashCharacterClassFromInputType
 	default:
 		return nullptr;
 	}
+}
+
+void AMatchGameMode::CreateAndInitPlayers() const
+{
+	UGameInstance* GameInstance = GetWorld()->GetGameInstance();
+	if (GameInstance == nullptr) return;
+
+	ULocalMultiplayerSubsystem* LocalMultiplayerSubsystem = GameInstance->GetSubsystem<ULocalMultiplayerSubsystem>();
+	if (LocalMultiplayerSubsystem == nullptr) return;
+
+	LocalMultiplayerSubsystem->CreateAndInitPlayers(ELocalMultiplayerInputMappingType::InGame);
 }

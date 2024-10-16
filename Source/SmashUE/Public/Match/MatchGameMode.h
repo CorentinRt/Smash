@@ -33,6 +33,8 @@ private:
 	
 	TSubclassOf<ASmashCharacter> GetSmashCharacterClassFromInputType(EAutoReceiveInput::Type InputType) const;
 
+	void CreateAndInitPlayers() const;
+
 protected:
 	UPROPERTY(EditAnywhere)
 	TArray<ASmashCharacter*> CharactersInsideArena;
