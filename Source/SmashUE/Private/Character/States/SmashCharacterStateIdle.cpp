@@ -31,6 +31,8 @@ void USmashCharacterStateIdle::StateEnter(ESmashCharacterStateID PreviousState)
 {
 	Super::StateEnter(PreviousState);
 
+	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Green, TEXT("Idle"));
+	
 	Character->PlayAnimMontage(IdleAnim);
 
 	Character->InputMoveXFastEvent.AddDynamic(this, &USmashCharacterStateIdle::OnInputMoveXFast);
@@ -56,11 +58,12 @@ void USmashCharacterStateIdle::StateTick(float DeltaTime)
 {
 	Super::StateTick(DeltaTime);
 
+	
 	if (!Character->GetCharacterMovement()->IsMovingOnGround())
 	{
 		StateMachine->ChangeState(ESmashCharacterStateID::Fall);
 	}
-	
+
 	if (FMath::Abs(Character->GetInputMoveX()) > CharacterSettings->InputMoveXThreshold)
 	{
 		StateMachine->ChangeState(ESmashCharacterStateID::Walk);

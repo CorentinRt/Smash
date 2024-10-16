@@ -36,6 +36,8 @@ void USmashCharacterStateWalk::StateEnter(ESmashCharacterStateID PreviousState)
 {
 	Super::StateEnter(PreviousState);
 
+	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Green, TEXT("Move"));
+	
 	Character->PlayAnimMontage(WalkAnim);
 
 	MovementComponent = Character->GetCharacterMovement();
