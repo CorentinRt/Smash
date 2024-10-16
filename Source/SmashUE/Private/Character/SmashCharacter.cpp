@@ -127,8 +127,7 @@ void ASmashCharacter::SetupMappingContextIntoController() const
 	UEnhancedInputLocalPlayerSubsystem* InputSystem = Player->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 	if (InputSystem == nullptr) return;
 
-	InputSystem->AddMappingContext(InputMappingContext, 0);
-	
+	//InputSystem->AddMappingContext(InputMappingContext, 0); 
 }
 
 float ASmashCharacter::GetInputMoveX() const
