@@ -59,6 +59,7 @@ Binaries/Win64/*
 !Binaries/Win64/SmashUEEditor.target
 !Binaries/Win64/UnrealEditor.modules
 !Binaries/Win64/UnrealEditor-SmashUE.dll
+!Binaries/Win64/UnrealEditor-LocalMultiplayer.dll
 
 Plugins/*/Binaries/*
 
