@@ -4,7 +4,6 @@
 #include "LocalMultiplayerSubsystem.h"
 
 #include "EnhancedInputSubsystems.h"
-#include "HeadMountedDisplayTypes.h"
 #include "LocalMultiplayerSettings.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -53,11 +52,16 @@ void ULocalMultiplayerSubsystem::AssignKeyboardMapping(int PlayerIndex, int Keyb
 
 	if (Controller == nullptr)	return;
 
+	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Yellow, Controller->GetPawn()->GetName());
+	
 	FModifyContextOptions ContextOptions;
 
 	ContextOptions.bForceImmediately = true;
-	
-	Controller->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->AddMappingContext(IMC, 1, ContextOptions);
+
+	if (Controller->GetLocalPlayer())
+	{
+		Controller->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->AddMappingContext(IMC, PlayerIndex + 1, ContextOptions);
+	}
 }
 
 int ULocalMultiplayerSubsystem::GetAssignedPlayerIndexFromGamepadProfileID(int DeviceID)
@@ -86,7 +90,10 @@ void ULocalMultiplayerSubsystem::AssignGamepadInputMapping(int PlayerIndex,
 	FModifyContextOptions ContextOptions;
 
 	ContextOptions.bForceImmediately = true;
-	
-	Controller->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->AddMappingContext(IMC, 1, ContextOptions);
+
+	if (Controller->GetLocalPlayer())
+	{
+		Controller->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->AddMappingContext(IMC, PlayerIndex + 1, ContextOptions);
+	}
 }
 
