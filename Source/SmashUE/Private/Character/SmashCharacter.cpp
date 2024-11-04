@@ -269,6 +269,16 @@ void ASmashCharacter::OnInputMoveYFast(const FInputActionValue& InputActionValue
 	CheckOneWayFloor();
 }
 
+FVector ASmashCharacter::GetFollowPosition() const
+{
+	return GetActorLocation();
+}
+
+bool ASmashCharacter::IsFollowable() const
+{
+	return true;
+}
+
 void ASmashCharacter::BindInputMoveXAxisAndActions(UEnhancedInputComponent* EnhancedInputComponent)
 {
 	if (InputData == nullptr) return;
