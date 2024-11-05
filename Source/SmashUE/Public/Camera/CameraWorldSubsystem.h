@@ -36,6 +36,8 @@ protected:
 
 	UCameraComponent* FindCameraByTag(const FName& Tag) const;
 
+	void TickUpdateCameraZoom(float DeltaTime);
+
 	void TickUpdateCameraPosition(float DeltaTime);
 
 #pragma endregion
@@ -51,12 +53,14 @@ protected:
 	UPROPERTY()
 	TArray<UObject*> FollowTargets;
 
+	FVector CalculateAveragePositionBetweenTargets();
+
+	float CalculateGreatestDistanceBetweenTargets();
+
 #pragma endregion
 
 #pragma region Misc
 	
-protected:
-	FVector CalculateAveragePositionBetweenTargets();
 
 #pragma endregion
 
@@ -81,6 +85,27 @@ protected:
 	void GetViewportBounds(FVector2D& OutViewportBoundsMin, FVector2D& OutViewportBoundsMax);
 
 	FVector CalculateWorldPositionFromViewportPosition(const FVector2D& ViewportPosition);
+
+#pragma endregion
+
+#pragma region Zoom
+
+protected:
+	UPROPERTY()
+	float CameraZoomYMin = 0.f;
+
+	UPROPERTY()
+	float CameraZoomYMax = 0.f;
+
+	UPROPERTY()
+	float CameraZoomDistanceBetweenTargetsMin = 300.f;
+
+	UPROPERTY()
+	float CameraZoomDistanceBetweenTargetsMax = 100.f;
+
+	UFUNCTION()
+	void InitCameraZoomParameters();
+
 
 #pragma endregion 
 	
