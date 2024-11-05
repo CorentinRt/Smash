@@ -16,6 +16,16 @@ void UCameraWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
 	CameraMain = FindCameraByTag(TEXT("CameraMain"));
+
+	if (CameraMain != nullptr)
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Orange, "CameraBoundsActor");
+	
+	AActor* CameraBoundsActor = FindCameraBoundsActor();
+	if (CameraBoundsActor != nullptr)
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, "CameraBoundsActor");
+		InitCameraBounds(CameraBoundsActor);
+	}
 }
 
 void UCameraWorldSubsystem::Tick(float DeltaTime)
@@ -45,9 +55,10 @@ void UCameraWorldSubsystem::TickUpdateCameraPosition(float DeltaTime)
 	if (CameraMain == nullptr)	return;
 
 	FVector AverageLocation = CalculateAveragePositionBetweenTargets();
-	FVector CameraLocation = CameraMain->K2_GetComponentToWorld().GetLocation();
+	FVector CameraLocation = CameraMain->GetOwner()->GetActorLocation();
+	ClampPositionIntoCameraBounds(AverageLocation);
 	AverageLocation.Y = CameraLocation.Y;
-	CameraMain->SetWorldLocation(AverageLocation);
+	CameraMain->GetOwner()->SetActorLocation(AverageLocation);
 }
 
 FVector UCameraWorldSubsystem::CalculateAveragePositionBetweenTargets()
@@ -77,6 +88,7 @@ FVector UCameraWorldSubsystem::CalculateAveragePositionBetweenTargets()
 	return TotalLocation;
 }
 
+
 UCameraComponent* UCameraWorldSubsystem::FindCameraByTag(const FName& Tag) const
 {
 	if (!GetWorld())	return nullptr;
@@ -93,4 +105,92 @@ UCameraComponent* UCameraWorldSubsystem::FindCameraByTag(const FName& Tag) const
 	}
 
 	return nullptr;
+}
+
+AActor* UCameraWorldSubsystem::FindCameraBoundsActor()
+{
+	TArray<AActor*> CameraBoundsActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "CameraBounds", CameraBoundsActors);
+
+	for (AActor* Actor : CameraBoundsActors)
+	{
+		return Actor;
+	}
+
+	return nullptr;
+}
+
+void UCameraWorldSubsystem::InitCameraBounds(AActor* CameraBoundsActor)
+{
+	FVector BoundsCenter;
+	FVector BoundsExtents;
+	CameraBoundsActor->GetActorBounds(false, BoundsCenter, BoundsExtents);
+
+	CameraBoundsMin = FVector2D(BoundsCenter.X - BoundsExtents.X, BoundsCenter.Z - BoundsExtents.Z);
+	CameraBoundsMax = FVector2D(BoundsCenter.X + BoundsExtents.X, BoundsCenter.Z + BoundsExtents.Z);
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("CameraBoundsMin: X=%f, Z=%f"), CameraBoundsMin.X, CameraBoundsMin.Y));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("CameraBoundsMin: X=%f, Z=%f"), CameraBoundsMax.X, CameraBoundsMax.Y));
+
+	
+	CameraBoundsYProjectionCenter = BoundsCenter.Y;
+}
+
+void UCameraWorldSubsystem::ClampPositionIntoCameraBounds(FVector& Position)
+{
+	FVector2D ViewportBoundsMin, ViewportBoundsMax;
+	GetViewportBounds(ViewportBoundsMin, ViewportBoundsMax);
+
+	FVector WorldBoundsMin = CalculateWorldPositionFromViewportPosition(ViewportBoundsMin);
+	FVector WorldBoundsMax = CalculateWorldPositionFromViewportPosition(ViewportBoundsMax);
+
+
+	ClampVector(Position, WorldBoundsMin, WorldBoundsMax);
+}
+
+void UCameraWorldSubsystem::GetViewportBounds(FVector2D& OutViewportBoundsMin, FVector2D& OutViewportBoundsMax)
+{
+	// Find Viewport
+	UGameViewportClient* ViewportClient = GetWorld()->GetGameViewport();
+	if (ViewportClient == nullptr)	return;
+
+	FViewport* Viewport = ViewportClient->Viewport;
+	if (Viewport == nullptr)	return;
+
+	// Calculate Viewport Rect according to Camera Aspect Ratio and Viewport ViewRect
+	FIntRect ViewRect(
+		Viewport->GetInitialPositionXY(),
+		Viewport->GetInitialPositionXY() + Viewport->GetSizeXY()
+	);
+	FIntRect ViewportRect = Viewport->CalculateViewExtents(CameraMain->AspectRatio, ViewRect);
+
+	// Fill Output parameters with ViewportRect
+	OutViewportBoundsMin.X = ViewportRect.Min.X;
+	OutViewportBoundsMin.Y = ViewportRect.Min.Y;
+
+	OutViewportBoundsMax.X = ViewportRect.Max.X;
+	OutViewportBoundsMax.Y = ViewportRect.Max.Y;
+}
+
+FVector UCameraWorldSubsystem::CalculateWorldPositionFromViewportPosition(const FVector2D& ViewportPosition)
+{
+	if (CameraMain == nullptr)	return FVector::ZeroVector;
+
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (PlayerController == nullptr)	return FVector::ZeroVector;
+
+	float YDistanceToCenter = CameraMain->GetOwner()->GetActorLocation().Y - CameraBoundsYProjectionCenter;
+
+	FVector CameraWorldProjectDir;
+	FVector WorldPosition;
+	UGameplayStatics::DeprojectScreenToWorld(
+		PlayerController,
+		ViewportPosition,
+		WorldPosition,
+		CameraWorldProjectDir
+	);
+
+	WorldPosition += CameraWorldProjectDir * YDistanceToCenter;
+
+	return WorldPosition;
 }
