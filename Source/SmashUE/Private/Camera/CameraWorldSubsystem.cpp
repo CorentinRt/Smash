@@ -32,7 +32,7 @@ void UCameraWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 void UCameraWorldSubsystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//TickUpdateCameraZoom(DeltaTime);
+	TickUpdateCameraZoom(DeltaTime);
 	TickUpdateCameraPosition(DeltaTime);
 }
 
@@ -143,13 +143,14 @@ void UCameraWorldSubsystem::TickUpdateCameraZoom(float DeltaTime)
 
 	float GreatestDistanceBetweenPlayers = CalculateGreatestDistanceBetweenTargets();
 
-	float percent = 0.f;
+	float Percent = GreatestDistanceBetweenPlayers / (FMath::Abs(CameraZoomDistanceBetweenTargetsMax - CameraZoomDistanceBetweenTargetsMin) * 10.f);
 
-	percent = GreatestDistanceBetweenPlayers / (CameraZoomDistanceBetweenTargetsMax - CameraZoomDistanceBetweenTargetsMin);
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, FString::Printf(TEXT("Percent : %f"), Percent));
+	Percent = FMath::Clamp(Percent, 0.f, 1.f);
 
-	percent = FMath::Clamp(percent, 0.f, 1.f);
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, FString::Printf(TEXT("Greatest distance : %f"), GreatestDistanceBetweenPlayers));
 	
-	float InversePercent = 1.f - percent;
+	float InversePercent = 1.f - Percent;
 
 	FVector CameraPos = CameraMain->GetOwner()->GetActorLocation();
 
