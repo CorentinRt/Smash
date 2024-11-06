@@ -32,7 +32,7 @@ void UCameraWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 void UCameraWorldSubsystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	TickUpdateCameraZoom(DeltaTime);
+	//TickUpdateCameraZoom(DeltaTime);
 	TickUpdateCameraPosition(DeltaTime);
 }
 
@@ -57,10 +57,12 @@ void UCameraWorldSubsystem::TickUpdateCameraPosition(float DeltaTime)
 	if (CameraMain == nullptr)	return;
 
 	FVector AverageLocation = CalculateAveragePositionBetweenTargets();
-	FVector CameraLocation = CameraMain->GetOwner()->GetActorLocation();
 	ClampPositionIntoCameraBounds(AverageLocation);
-	//AverageLocation.Y = CameraLocation.Y;
-	CameraMain->GetOwner()->SetActorLocation(AverageLocation);
+
+	FVector NewCameraPosition = CameraMain->GetOwner()->GetActorLocation();
+	NewCameraPosition.X = AverageLocation.X;
+	NewCameraPosition.Z = AverageLocation.Z;
+	CameraMain->GetOwner()->SetActorLocation(NewCameraPosition);
 }
 
 FVector UCameraWorldSubsystem::CalculateAveragePositionBetweenTargets()
@@ -178,8 +180,8 @@ void UCameraWorldSubsystem::InitCameraBounds(AActor* CameraBoundsActor)
 	CameraBoundsMin = FVector2D(BoundsCenter.X - BoundsExtents.X, BoundsCenter.Z - BoundsExtents.Z);
 	CameraBoundsMax = FVector2D(BoundsCenter.X + BoundsExtents.X, BoundsCenter.Z + BoundsExtents.Z);
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("CameraBoundsMin: X=%f, Z=%f"), CameraBoundsMin.X, CameraBoundsMin.Y));
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("CameraBoundsMin: X=%f, Z=%f"), CameraBoundsMax.X, CameraBoundsMax.Y));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("CameraBoundsMin: X=%f, Z=%f"), CameraBoundsMin.X, CameraBoundsMin.Y));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("CameraBoundsMin: X=%f, Z=%f"), CameraBoundsMax.X, CameraBoundsMax.Y));
 
 	
 	CameraBoundsYProjectionCenter = BoundsCenter.Y;
@@ -193,10 +195,14 @@ void UCameraWorldSubsystem::ClampPositionIntoCameraBounds(FVector& Position)
 	FVector WorldBoundsMin = CalculateWorldPositionFromViewportPosition(ViewportBoundsMin);
 	FVector WorldBoundsMax = CalculateWorldPositionFromViewportPosition(ViewportBoundsMax);
 
-	//Position.X = FMath::Clamp(Position.X, WorldBoundsMin.X, WorldBoundsMax.X);
-	//Position.Z = FMath::Clamp(Position.Z, WorldBoundsMin.Y, WorldBoundsMax.Y);
+	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Purple, FString::Printf(TEXT("WorldBoundsMin: X=%f, Z=%f"), WorldBoundsMin.X, WorldBoundsMin.Z));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Purple, FString::Printf(TEXT("WorldBoundsMax: X=%f, Z=%f"), WorldBoundsMax.X, WorldBoundsMax.Z));
 
-	ClampVector(Position, WorldBoundsMin, WorldBoundsMax);
+	FVector WorldBoundsRange = WorldBoundsMax - WorldBoundsMin;
+	FVector WorldBoundsExtents = WorldBoundsRange / 2.f;
+	
+	Position.X = FMath::Clamp(Position.X, CameraBoundsMin.X + WorldBoundsExtents.X, CameraBoundsMax.X - WorldBoundsExtents.X);
+	Position.Z = FMath::Clamp(Position.Z, CameraBoundsMin.Y - WorldBoundsExtents.Z, CameraBoundsMax.Y + WorldBoundsExtents.Z);
 }
 
 void UCameraWorldSubsystem::GetViewportBounds(FVector2D& OutViewportBoundsMin, FVector2D& OutViewportBoundsMax)
